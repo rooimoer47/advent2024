@@ -1,13 +1,26 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
 public class Main {
+
+    private static Map<String, Map<Integer, BigInteger>> memo = new HashMap<>();
+    static char[][] grid;
+    static int atrow=0;
+    static int atcol=0;
+    static int[][] directions = new int[][]{{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+    static long ra;
+    static long rb;
+    static long rc;
+    static BigInteger raval = BigInteger.ONE;
+    static BigInteger bra;
+    static BigInteger brb;
+    static BigInteger brc;
+    static int[] program;
 
     public static List<String> read(String filename) {
         List<String> lines = new ArrayList<>();
@@ -309,18 +322,19 @@ public class Main {
     }
 
     public static void print(char [][] a) {
-        for (char[] s : a) {
-            for (char c : s) {
-                System.out.print(c);
+        for (int y=0; y<a.length; y++) {
+            for (int x=0; x<a[y].length; x++) {
+                System.out.print(a[x][y]);
             }
             System.out.println();
         }
     }
 
-    public static void print(List<BigInteger> a) {
-        for (BigInteger b : a) {
-            System.out.print(b);
+    public static void print(List<String> a) {
+        for (String b : a) {
+            System.out.print(b + " ");
         }
+        System.out.println();
     }
 
     public static int fiveA(String filename) {
@@ -801,16 +815,1085 @@ public class Main {
         return sum;
     }
 
-    public static int tenA(String filename) {
+//    public static int tenA(String filename) {
+//        char[][] list = readBlock(filename);
+//        List<Coordinate>[] coords = new List[10];
+//        coords[0] = new ArrayList<>();
+//        for (int i = 0; i < list.length; i++) {
+//            for (int j = 0; j < list[i].length; j++) {
+//                if (list[i][j] == '0') {
+//                    Coordinate c = new Coordinate(i, j);
+//                    c.origin = c;
+//                    coords[0].add(c);
+//                }
+//            }
+//        }
+////        System.out.println("origins "+coords[0].size());
+//        int score = 1;
+//        while (score < 10) {
+//            coords[score] = new ArrayList<>();
+//            for (Coordinate coord : coords[score-1]) {
+//                if (coord.x > 0 && Integer.parseInt(list[coord.x-1][coord.y]+"") == score) {
+//                    Coordinate c = new Coordinate(coord.x-1, coord.y);
+//                    c.origin = coord.origin;
+//                    if (score == 9) {
+//                        c.destination = c;
+//                    }
+//                    coords[score].add(c);
+//                }
+//                if (coord.y > 0 && Integer.parseInt(list[coord.x][coord.y-1]+"") == score) {
+//                    Coordinate c = new Coordinate(coord.x, coord.y-1);
+//                    c.origin = coord.origin;
+//                    if (score == 9) {
+//                        c.destination = c;
+//                    }
+//                    coords[score].add(c);
+//                }
+//                if (coord.x < list.length-1 && Integer.parseInt(list[coord.x+1][coord.y]+"") == score) {
+//                    Coordinate c = new Coordinate(coord.x+1, coord.y);
+//                    c.origin = coord.origin;
+//                    if (score == 9) {
+//                        c.destination = c;
+//                    }
+//                    coords[score].add(c);
+//                }
+//                if (coord.y < list.length-1 && Integer.parseInt(list[coord.x][coord.y+1]+"") == score) {
+//                    Coordinate c = new Coordinate(coord.x, coord.y+1);
+//                    c.origin = coord.origin;
+//                    if (score == 9) {
+//                        c.destination = c;
+//                    }
+//                    coords[score].add(c);
+//                }
+//            }
+////            System.out.println(coords[score].get(0).x + "," + coords[score].get(0).y);
+//            score++;
+//        }
+//        Set<String> fin = new HashSet<>();
+//        for (Coordinate coord : coords[9]) {
+//            String id = coord.origin.x + "," + coord.origin.y + "," + coord.destination.x + "," + coord.destination.y;
+////            System.out.println(id);
+//            fin.add(id);
+//        }
+//        return fin.size();
+//    }
+
+//    public static int tenB(String filename) {
+//        char[][] list = readBlock(filename);
+//        List<Coordinate>[] coords = new List[10];
+//        coords[0] = new ArrayList<>();
+//        for (int i = 0; i < list.length; i++) {
+//            for (int j = 0; j < list[i].length; j++) {
+//                if (list[i][j] == '0') {
+//                    Coordinate c = new Coordinate(i, j);
+//                    c.origin = c;
+//                    coords[0].add(c);
+//                }
+//            }
+//        }
+//        int score = 1;
+//        while (score < 10) {
+//            coords[score] = new ArrayList<>();
+//            for (Coordinate coord : coords[score-1]) {
+//                if (coord.x > 0 && Integer.parseInt(list[coord.x-1][coord.y]+"") == score) {
+//                    Coordinate c = new Coordinate(coord.x-1, coord.y);
+//                    c.origin = coord.origin;
+//                    if (score == 9) {
+//                        c.destination = c;
+//                    }
+//                    coords[score].add(c);
+//                }
+//                if (coord.y > 0 && Integer.parseInt(list[coord.x][coord.y-1]+"") == score) {
+//                    Coordinate c = new Coordinate(coord.x, coord.y-1);
+//                    c.origin = coord.origin;
+//                    if (score == 9) {
+//                        c.destination = c;
+//                    }
+//                    coords[score].add(c);
+//                }
+//                if (coord.x < list.length-1 && Integer.parseInt(list[coord.x+1][coord.y]+"") == score) {
+//                    Coordinate c = new Coordinate(coord.x+1, coord.y);
+//                    c.origin = coord.origin;
+//                    if (score == 9) {
+//                        c.destination = c;
+//                    }
+//                    coords[score].add(c);
+//                }
+//                if (coord.y < list.length-1 && Integer.parseInt(list[coord.x][coord.y+1]+"") == score) {
+//                    Coordinate c = new Coordinate(coord.x, coord.y+1);
+//                    c.origin = coord.origin;
+//                    if (score == 9) {
+//                        c.destination = c;
+//                    }
+//                    coords[score].add(c);
+//                }
+//            }
+//            score++;
+//        }
+////        Set<String> fin = new HashSet<>();
+////        for (Coordinate coord : coords[9]) {
+////            String id = coord.origin.x + "," + coord.origin.y + "," + coord.destination.x + "," + coord.destination.y;
+////            fin.add(id);
+////        }
+////        return fin.size();
+//        return coords[9].size();
+//    }
+
+    public static int elevenA(String filename) {
         List<String> list = read(filename);
+
+        List<String> nums = new ArrayList<>(Arrays.asList(list.get(0).split(" ")));
+
+//        print(nums);
+
+        int loops = 25;
+
+        for(int i=0; i<loops; i++) {
+            for (int index=0; index<nums.size(); index++) {
+                if (nums.get(index).equals("0")) {
+                    nums.remove(index);
+                    nums.add(index, "1");
+                } else if (nums.get(index).length()%2 == 0) {
+                    BigInteger a = new BigInteger(nums.get(index).substring(0, nums.get(index).length()/2));
+                    BigInteger b = new BigInteger(nums.get(index).substring(nums.get(index).length()/2));
+                    nums.remove(index);
+                    nums.add(index, b.toString());
+                    nums.add(index, a.toString());
+                    index++;
+                } else {
+                    BigInteger a = new BigInteger(nums.remove(index)).multiply(new BigInteger("2024"));
+                    nums.add(index, a.toString());
+                }
+            }
+//            print(nums);
+        }
+
+        return nums.size();
+    }
+
+    public static int elevenB(String filename) {
+        List<String> list = read(filename);
+
+        List<String> nums = new ArrayList<>(Arrays.asList(list.get(0).split(" ")));
+
+//        print(nums);
+
+        int loops = 75;
+
+        for(int i=0; i<loops; i++) {
+            System.out.println(i);
+            for (int index=0; index<nums.size(); index++) {
+                if (nums.get(index).equals("0")) {
+                    nums.remove(index);
+                    nums.add(index, "1");
+                } else if (nums.get(index).length()%2 == 0) {
+                    BigInteger a = new BigInteger(nums.get(index).substring(0, nums.get(index).length()/2));
+                    BigInteger b = new BigInteger(nums.get(index).substring(nums.get(index).length()/2));
+                    nums.remove(index);
+                    nums.add(index, b.toString());
+                    nums.add(index, a.toString());
+                    index++;
+                } else {
+                    BigInteger a = new BigInteger(nums.remove(index)).multiply(new BigInteger("2024"));
+                    nums.add(index, a.toString());
+                }
+            }
+//            print(nums);
+        }
+
+        return nums.size();
+    }
+
+    public static BigInteger count(BigInteger  num, int loops) {
+        String key = num.toString() + ":" + loops;
+        if (memo.containsKey(key) && memo.get(key).containsKey(loops)) {
+            return memo.get(key).get(loops);
+        }
+
+        if (loops == 0) {
+            return BigInteger.ONE;
+        }
+
+        BigInteger result;
+        if (num.equals(BigInteger.ZERO)) {
+            result = count(BigInteger.ONE, loops-1);
+        } else if (num.toString().length() %2 ==0) {
+            String numstring = num.toString();
+            BigInteger a = new BigInteger(numstring.substring(0, numstring.length()/2));
+            BigInteger b = new BigInteger(numstring.substring(numstring.length()/2));
+            result =  count(a, loops-1).add(count(b, loops-1));
+        } else {
+            result = count(num.multiply(new BigInteger("2024")), loops-1);
+        }
+
+        memo.computeIfAbsent(key, _ -> new HashMap<>()).put(loops, result);
+
+        return result;
+    }
+
+    public static BigInteger elevenC(String filename) {
+        List<String> list = read(filename);
+        List<String> nums = Arrays.asList(list.get(0).split(" "));
+
+        int loops = 75;
+        BigInteger sum = BigInteger.ZERO;
+
+        memo.clear();
+
+        for (String num : nums) {
+            sum = sum.add(count(new BigInteger(num), loops));
+        }
+
+        return sum;
+    }
+
+    public static void findRegion(char[][] list, int x, int xmax, int y, int ymax, char type, boolean [][] visited, List<Coordinate> region) {
+        if (x < 0 || x > xmax-1 || y < 0 || y > ymax-1 || visited[x][y] || list[x][y] != type) {
+            return;
+        }
+        visited[x][y] = true;
+        region.add(new Coordinate(x, y));
+        findRegion(list, x-1, xmax, y, ymax, type, visited, region);
+        findRegion(list, x+1, xmax, y, ymax, type, visited, region);
+        findRegion(list, x, xmax, y-1, ymax, type, visited, region);
+        findRegion(list, x, xmax, y+1, ymax, type, visited, region);
+    }
+
+    public static int calcPerimiter(List<Coordinate> region, char[][]list) {
+        int perimiter = 0;
+        char rtype = list[region.getFirst().x][region.getFirst().y];
+        for (Coordinate c : region) {
+            if (c.x == 0 || list[c.x-1][c.y] != rtype) {
+                perimiter++;
+            }
+            if (c.y == 0 || list[c.x][c.y-1] != rtype) {
+                perimiter++;
+            }
+            if (c.x == list.length-1 || list[c.x+1][c.y] != rtype) {
+                perimiter++;
+            }
+            if (c.y == list[0].length-1 || list[c.x][c.y+1] != rtype) {
+                perimiter++;
+            }
+        }
+        return perimiter;
+    }
+
+    public static int countSides(List<Coordinate> region, char[][]list) {
+        List<List<Integer>> hor = new ArrayList<>();
+        List<List<Integer>> ver = new ArrayList<>();
+
+        for (Coordinate c : region) {
+            int x = c.x, y = c.y;
+            if (y==0 || list[x][y-1] != list[x][y]) {
+
+            }
+        }
+        return hor.size()+ver.size();
+    }
+
+    public static int twelveA(String filename) {
+        char [][] list = readBlock(filename);
+        int rows = list.length;
+        int cols = list[0].length;
+        boolean[][] visited = new boolean[rows][cols];
+        List<List<Coordinate>> regions = new ArrayList<>();
+
+        for (int i=0; i<rows; i++) {
+            for (int j=0; j<cols; j++) {
+                if (!visited[i][j]) {
+                    char type = list[i][j];
+                    List<Coordinate> region = new ArrayList<>();
+                    findRegion(list, i, rows, j, cols, type, visited, region);
+                    regions.add(region);
+
+//                    int area;
+//                    int sides;
+//                    sum +=
+                }
+            }
+        }
+
+        return 0;//sum;
+    }
+
+    public static int twelveB(String filename) {
+        char [][] list = readBlock(filename);
+        int rows = list.length;
+        int cols = list[0].length;
+        boolean[][] visited = new boolean[rows][cols];
+        List<List<Coordinate>> regions = new ArrayList<>();
+
+        for (int i=0; i<rows; i++) {
+            for (int j=0; j<cols; j++) {
+                if (!visited[i][j]) {
+                    char type = list[i][j];
+                    List<Coordinate> region = new ArrayList<>();
+                    findRegion(list, i, rows, j, cols, type, visited, region);
+                    regions.add(region);
+                }
+            }
+        }
+
+        int sum = 0;
+        for (List<Coordinate> region : regions) {
+            sum += calcPerimiter(region, list) * region.size();
+        }
+        return sum;
+    }
+
+    public static long getPrize(long ax, long ay, long bx, long by, long px, long py) {
+        Queue<long[]> q = new PriorityQueue<>((a, b) -> Math.toIntExact(a[2] - b[2]));
+        Set<String> v = new HashSet<>();
+
+        q.offer(new long[]{0,0,0,0,0});
+        v.add("0,0");
+
+        while(!q.isEmpty()) {
+            long[] cur = q.poll();
+            long x = cur[0];
+            long y = cur[1];
+//            System.out.println("x: " + x + " y: " + y);
+            long total = cur[2];
+            long buta=cur[3], butb=cur[4];
+
+            if (x==px && y==py) {
+                return total;
+            } else if (x > px || y > py) {
+                continue;
+            }
+            long newAX = x+ax;
+            long newAY = y+ay;
+            String newPosA = newAX+","+newAY;
+            long newTotA = total+3;
+            buta++;
+
+            if (!v.contains(newPosA)) {
+                q.offer(new long[]{newAX,newAY,newTotA, buta, butb});
+                v.add(newPosA);
+            }
+
+            long newBX = x+bx;
+            long newBY = y+by;
+            String newPosB = newBX+","+newBY;
+            long newTotB = total+1;
+            buta--;
+            butb++;
+            if (!v.contains(newPosB)) {
+                q.offer(new long[]{newBX,newBY,newTotB, buta, butb});
+                v.add(newPosB);
+            }
+        }
 
         return 0;
     }
 
-    public static int tenB(String filename) {
+//    public static long getPrizeB(long ax, long ay, long bx, long by, long px, long py) {
+//        GCD gcd = gcd(ax, bx);
+//        if (px % gcd.x != 0 || py % gcd.y != 0) {
+//
+//        }
+//        return 0L;
+//    }
+
+    public static long thirtA(String filename) {
         List<String> list = read(filename);
 
-        return 0;
+        long ax=0L, ay=0L, bx=0L, by=0L, px, py, sum=0L;
+
+        for (String l : list) {
+            if (!l.isEmpty()) {
+                String[] ll = l.split(": ");
+                if (ll[0].equals("Button A")) {
+                    String[] lll = ll[1].split(", ");
+                    ax = Long.parseLong(lll[0].replace("X+", ""));
+                    ay = Long.parseLong(lll[1].replace("Y+", ""));
+                    continue;
+                }
+                if (ll[0].equals("Button B")) {
+                    String[] lll = ll[1].split(", ");
+                    bx = Long.parseLong(lll[0].replace("X+", ""));
+                    by = Long.parseLong(lll[1].replace("Y+", ""));
+                    continue;
+                }
+                if (ll[0].equals("Prize")) {
+                    String[] lll = ll[1].split(", ");
+                    px = Long.parseLong(lll[0].replace("X=", "")) + 10000000000000L;
+                    py = Long.parseLong(lll[1].replace("Y=", "")) + 10000000000000L;
+                    long p = getPrize(ax, ay, bx, by, px, py);
+                    System.out.println(p);
+                    sum+=p;
+                }
+            }
+        }
+
+        return sum;
+    }
+
+    public static long thirtB(String filename) {
+        List<String> list = read(filename);
+
+        long ax=0, ay=0, bx=0, by=0, px, py, sum=0;
+
+        for (String l : list) {
+            if (!l.isEmpty()) {
+                String[] ll = l.split(": ");
+                if (ll[0].equals("Button A")) {
+                    String[] lll = ll[1].split(", ");
+                    ax = Long.parseLong(lll[0].replace("X+", ""));
+                    ay = Long.parseLong(lll[1].replace("Y+", ""));
+                    continue;
+                }
+                if (ll[0].equals("Button B")) {
+                    String[] lll = ll[1].split(", ");
+                    bx = Long.parseLong(lll[0].replace("X+", ""));
+                    by = Long.parseLong(lll[1].replace("Y+", ""));
+                    continue;
+                }
+                if (ll[0].equals("Prize")) {
+                    String[] lll = ll[1].split(", ");
+                    px = Long.parseLong(lll[0].replace("X=", "")) + 10000000000000L;
+                    py = Long.parseLong(lll[1].replace("Y=", "")) + 10000000000000L;
+                    sum+= getPrize(ax, ay, bx, by, px, py);
+                }
+            }
+        }
+
+        return sum;
+    }
+
+    public static long fourTA(String filename) {
+        List<String> list = read(filename);
+
+        long[] qs = new long[4];
+        Arrays.fill(qs, 0);
+
+        long xsize = 101;
+        long ysize = 103;
+
+        long mul = 1;
+
+        for (String l : list) {
+
+            String[] parts = l.split(" ");
+            String[] posCoords = parts[0].substring(2).split(",");
+            long px = Long.parseLong(posCoords[0]);
+            long py = Long.parseLong(posCoords[1]);
+            String[] velCoords = parts[1].substring(2).split(",");
+            long vx = Long.parseLong(velCoords[0]);
+            long vy = Long.parseLong(velCoords[1]);
+
+            long npx = ((100*vx) + px)%xsize;
+            if (npx<0){
+                npx+=xsize;
+            }
+            long npy = ((100*vy) + py)%ysize;
+            if (npy<0){
+                npy+=ysize;
+            }
+            if (npx <= (xsize-3)/2 && npy <= (ysize-3)/2) {
+                qs[0]++;
+            } else if (npx >= (xsize+1)/2 && npy <= (ysize-3)/2) {
+                qs[1]++;
+            } else if (npx <= (xsize-3)/2 && npy >= (ysize+1)/2) {
+                qs[2]++;
+            } else if (npx >= (xsize+1)/2 && npy >= (ysize+1)/2) {
+                qs[3]++;
+            }
+
+        }
+
+        for (long i:qs){
+            mul*=i;
+        }
+
+        return mul;
+    }
+
+    public static String toString(char[][] c) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < c.length; i++) {
+            for (int j = 0; j < c[i].length; j++) {
+                sb.append(c[i][j]);
+            }
+        }
+        return sb.toString();
+    }
+
+    public static long fourTB(String filename) {
+        List<String> list = read(filename);
+
+        int xsize = 101;
+        int ysize = 103;
+
+        char[][] array = new char[xsize][ysize];
+        for (char[] ar: array){
+            Arrays.fill(ar, ' ');
+        }
+
+        long mul = 1;
+
+        List<Coordinate> coords = new ArrayList<>();
+        HashSet<String> seen = new HashSet<>();
+
+        for (String l : list) {
+
+            String[] parts = l.split(" ");
+            String[] posCoords = parts[0].substring(2).split(",");
+            int px = Integer.parseInt(posCoords[0]);
+            int py = Integer.parseInt(posCoords[1]);
+            String[] velCoords = parts[1].substring(2).split(",");
+            int vx = Integer.parseInt(velCoords[0]);
+            int vy = Integer.parseInt(velCoords[1]);
+            Coordinate c = new Coordinate(px, py);
+            c.dirx = vx;
+            c.diry = vy;
+            coords.add(c);
+            array[px][py] = '#';
+        }
+
+//        System.out.println("num: "+coords.size());
+
+        int max = Integer.MIN_VALUE;
+        long it=0;
+        long mit = 0;
+        long mmit = 0;
+        while (max < coords.size()) {
+            for (Coordinate c : coords) {
+                array[c.x][c.y] = ' ';
+                c.x = (c.x+c.dirx)%xsize;
+                if (c.x<0){
+                    c.x+=xsize;
+                }
+                c.y = (c.y+c.diry)%ysize;
+                if (c.y<0){
+                    c.y+=ysize;
+                }
+                array[c.x][c.y] = '#';
+            }
+            if (!seen.contains(toString(array))) {
+                seen.add(toString(array));
+            } else {
+                break;
+            }
+            it++;
+            int mmax = Integer.MIN_VALUE;
+
+            int count = 0;
+            for (int i = 0; i < array.length; i++) {
+                for (int j = 0; j < array[i].length; j++) {
+                    if (array[i][j] != '#') {
+                        if (mmax > count){
+                            mmit = it;
+                        }
+                        mmax = Math.max(mmax, count);
+                        count=0;
+                    } else {
+                        count++;
+                    }
+                }
+            }
+            if (mmax > max) {
+                mit = mmit;
+//                System.out.println(mmax + " @ " + mit);
+            }
+            max = Math.max(max, mmax);
+        }
+
+        return mit;
+    }
+
+    public static void move(char dir){
+        int newrow=atrow, newcol=atcol;
+        int drow=0,dcol=0;
+        switch (dir){
+            case '<': dcol=-1; break;
+            case '>': dcol=1; break;
+            case '^': drow=-1; break;
+            case 'v': drow=1; break;
+        }
+
+        newrow=atrow+drow;
+        newcol=atcol+dcol;
+
+        if (grid[newrow][newcol] == '#') {
+            return;
+        }
+
+        if (grid[newrow][newcol] == 'O') {
+            int pushrow = newrow + drow;
+            int pushcol = newcol + dcol;
+            List<Coordinate> boxes = new ArrayList<>();
+            boxes.add(new Coordinate(newrow, newcol));
+            while (grid[pushrow][pushcol] == 'O') {
+                boxes.add(new Coordinate(pushrow, pushcol));
+                pushrow+=drow;
+                pushcol+=dcol;
+            }
+            if (grid[pushrow][pushcol] != '.') {
+                return;
+            }
+
+            for (int i=boxes.size()-1; i>=0; i-- ) {
+                Coordinate c = boxes.get(i);
+                int destr = c.x+drow;
+                int destc = c.y+dcol;
+                grid[destr][destc] = 'O';
+                grid[c.x][c.y] = '.';
+            }
+        }
+        grid[newrow][newcol] = '@';
+        grid[atrow][atcol] = '.';
+        atrow = newrow;
+        atcol = newcol;
+    }
+
+    public static long fifTA(String filename) {
+        List<String> list = read(filename);
+
+        List<String> gridLines = new ArrayList<>();
+        StringBuilder movementBuilder = new StringBuilder();
+
+        for (String line : list) {
+            if (line.matches("^[<>v^]+$")) {
+                movementBuilder.append(line);
+            } else {
+                gridLines.add(line);
+            }
+        }
+        grid = new char[gridLines.size()][gridLines.get(0).length()];
+        for (int i = 0; i < gridLines.size(); i++) {
+            grid[i] = gridLines.get(i).toCharArray();
+            for (int j = 0; j < grid[i].length; j++) {
+                if (grid[i][j] == '@') {
+                    atrow = i;
+                    atcol = j;
+                }
+            }
+        }
+        String moves = movementBuilder.toString();
+
+        for (int i = 0; i < moves.length(); i++) {
+//            print(grid);
+//            System.out.println("Move " + moves.charAt(i));
+            move(moves.charAt(i));
+        }
+
+//        print(grid);
+        long sum = 0;
+        for (int i=0; i<grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                if (grid[i][j] == 'O') {
+                    sum += (100*i+j);
+                }
+            }
+        }
+
+        return sum;
+    }
+
+    public static long fifTB(String filename) {
+        List<String> list = read(filename);
+
+        List<String> gridLines = new ArrayList<>();
+        StringBuilder movementBuilder = new StringBuilder();
+
+        for (String line : list) {
+            if (line.matches("^[<>v^]+$")) {
+                movementBuilder.append(line);
+            } else {
+                gridLines.add(line);
+            }
+        }
+        grid = new char[gridLines.size()][gridLines.get(0).length()*2];
+        for (int i = 0; i < gridLines.size(); i++) {
+            String line = gridLines.get(i);
+            int col=0;
+            for (int j = 0; j < line.length(); j++) {
+                char c = line.charAt(j);
+                switch (c) {
+                    case 'O':
+                        grid[i][c++] = '[';
+                        grid[i][c++] = ']';
+                        break;
+                    case '.':
+                        grid[i][c++] = '.';
+                        grid[i][c++] = ']';
+                        break;
+                    case '#':
+                        grid[i][c++] = '#';
+                        grid[i][c++] = '#';
+                        break;
+                    case '@':
+                        grid[i][c++] = '@';
+                        grid[i][c++] = '.';
+                        atrow = i;
+                        atcol = j;
+                        break;
+                }
+            }
+        }
+        String moves = movementBuilder.toString();
+
+        for (int i = 0; i < moves.length(); i++) {
+//            print(grid);
+//            System.out.println("Move " + moves.charAt(i));
+            move(moves.charAt(i));
+        }
+
+//        print(grid);
+        long sum = 0;
+        for (int i=0; i<grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                if (grid[i][j] == 'O') {
+                    sum += (100*i+j);
+                }
+            }
+        }
+
+        return sum;
+    }
+
+    public static long doMaze(Coordinate c) {
+        Queue<Coordinate> q = new LinkedList<>();
+        long[][]visited = new long[grid.length][grid[0].length];
+        for (long[] v:visited) {
+            Arrays.fill(v, Long.MAX_VALUE);
+        }
+        q.offer(c);
+        visited[c.x][c.y] = c.score;
+        long score = Long.MAX_VALUE;
+        while (!q.isEmpty()) {
+            Coordinate cur = q.poll();
+            if (grid[cur.x][cur.y] == 'E' && cur.score < score){
+                score = cur.score;
+            }
+
+            for (int[] dir:directions) {
+                int newx = cur.x+dir[0];
+                int newy = cur.y+dir[1];
+                Coordinate n = new Coordinate(newx, newy);
+                n.score = cur.score;
+//                n.cnt = cur.cnt + 1;
+                if (cur.dirx == dir[0] && cur.diry == dir[1]) {
+                    n.score++;
+                } else {
+                    n.score+=1001;
+                }
+                if (visited[newx][newy]>n.score && grid[newx][newy] != '#') {
+                    visited[newx][newy] = n.score;
+                    n.dirx = dir[0];
+                    n.diry = dir[1];
+                    q.offer(n);
+                }
+            }
+        }
+        return score;
+    }
+
+    public static long doMazePath(Coordinate c) {
+        Queue<Coordinate> q = new LinkedList<>();
+        long[][]visited = new long[grid.length][grid[0].length];
+        for (long[] v:visited) {
+            Arrays.fill(v, Long.MAX_VALUE);
+        }
+        q.offer(c);
+        visited[c.x][c.y] = c.score;
+        long score = Long.MAX_VALUE;
+//        Set<String> visitedSet = new HashSet<>();
+        while (!q.isEmpty()) {
+            Coordinate cur = q.poll();
+            if (grid[cur.x][cur.y] == 'E' && cur.score <= score){
+                score = cur.score;
+//                for (Coordinate coord : cur.path) {
+//                    visitedSet.add(coord.x+","+coord.y);
+//                }
+            }
+
+            for (int[] dir:directions) {
+                int newx = cur.x+dir[0];
+                int newy = cur.y+dir[1];
+                Coordinate n = new Coordinate(newx, newy);
+                n.score = cur.score;
+                if (cur.dirx == dir[0] && cur.diry == dir[1]) {
+                    n.score++;
+                } else {
+                    // changed for problem 18 from 1001 to 1
+                    n.score+=1;
+                }
+                if (newx >= 0 && newx < grid.length && newy >= 0 && newy < grid.length && grid[newx][newy] != '#' && visited[newx][newy]>=n.score) {
+                    visited[newx][newy] = n.score;
+//                    n.path.addAll(cur.path);
+//                    n.path.add(n);
+                    n.dirx = dir[0];
+                    n.diry = dir[1];
+                    q.offer(n);
+                }
+            }
+        }
+        // commented out for problem 18
+//        for (String s : visitedSet) {
+//            int x = Integer.parseInt(s.split(",")[0]);
+//            int y = Integer.parseInt(s.split(",")[1]);
+//            grid[x][y] = 'O';
+//        }
+//        print(grid);
+//        return visitedSet.size();
+        return score;
+    }
+
+//    public static long sixTA(String filename) {
+//        grid = readBlock(filename);
+//        int startr=0, startc=0;
+//        for (int i = 0; i < grid.length; i++) {
+//            for (int j = 0; j < grid[i].length; j++) {
+//                if (grid[i][j]=='S') {
+//                    startr=i;
+//                    startc=j;
+//                }
+//            }
+//        }
+//        Coordinate c = new Coordinate(startr,startc);
+//        c.dirx=0;
+//        c.diry=1;
+//        c.score=0L;
+//        c.cnt=1;
+//        return doMaze(c);
+//    }
+
+//    public static long sixTB(String filename) {
+//        grid = readBlock(filename);
+//        int startr=0, startc=0, endr=0, endc=0;
+//        for (int i = 0; i < grid.length; i++) {
+//            for (int j = 0; j < grid[i].length; j++) {
+//                if (grid[i][j]=='S') {
+//                    startr=i;
+//                    startc=j;
+//                }
+//            }
+//        }
+//        Coordinate c = new Coordinate(startr,startc);
+//        c.dirx=0;
+//        c.diry=1;
+//        c.score=0L;
+//        c.path.add(c);
+//        return doMazePath(c);
+//    }
+
+    public static long getOperand(int o) {
+        switch (o) {
+            case 0: return 0L;
+            case 1: return 1L;
+            case 2: return 2L;
+            case 3: return 3L;
+            case 4: return ra;
+            case 5: return rb;
+            case 6: return rc;
+        }
+        return 0L;
+    }
+
+    public static BigInteger getOperand2(int o) {
+        switch (o) {
+            case 0: return BigInteger.ZERO;
+            case 1: return BigInteger.ONE;
+            case 2: return BigInteger.TWO;
+            case 3: return new BigInteger("3");
+            case 4: return bra;
+            case 5: return brb;
+            case 6: return brc;
+        }
+        return BigInteger.ZERO;
+    }
+
+    public static List<Long> run() {
+        int pointer = 0;
+        List<Long> out = new ArrayList<>();
+        while (pointer < program.length) {
+            int op = program[pointer];
+            int operand = program[pointer+1];
+            switch (op) {
+                case 0: ra = (long) (ra / Math.pow(2, getOperand(operand))); break;
+                case 1: rb ^= operand; break;
+                case 2: rb = getOperand(operand)%8; break;
+                case 3: if (ra!=0) pointer=operand-2; break;
+                case 4: rb ^= rc; break;
+                case 5: out.add(getOperand(operand)%8); break;
+                case 6: rb = (long) (ra / Math.pow(2, getOperand(operand))); break;
+                case 7: rc = (long) (ra / Math.pow(2, getOperand(operand))); break;
+            }
+            pointer += 2;
+        }
+        return out;
+    }
+
+    public static boolean run2() {
+        int pointer = 0;
+        BigInteger eight = new BigInteger("8");
+        List<Long> out = new ArrayList<>();
+        while (pointer < program.length) {
+            int op = program[pointer];
+            int operand = program[pointer+1];
+            switch (op) {
+                case 0: bra = bra.divide(new BigInteger((int)Math.pow(2,getOperand2(operand).intValue())+"")); break;
+                case 1: brb = brb.xor(new BigInteger(operand+"")); break;
+                case 2: brb = getOperand2(operand).mod(eight); break;
+                case 3: if (!bra.equals(BigInteger.ZERO)) pointer=operand-2; break;
+                case 4: brb = brb.xor(brc); break;
+                case 5: out.add(getOperand2(operand).mod(eight).longValue());
+                if (out.size() > program.length || out.getLast() != program[out.size()-1]) return false;
+                if (out.size()==1 && out.getFirst()==2L) System.out.println(raval.toString());
+                break;
+                case 6: brb = bra.divide(new BigInteger((int)Math.pow(2,getOperand2(operand).intValue())+"")); break;
+                case 7: brc = bra.divide(new BigInteger((int)Math.pow(2,getOperand2(operand).intValue())+"")); break;
+            }
+            pointer += 2;
+        }
+        return out.size() == program.length;
+    }
+
+    public static String sevenTA(String filename) {
+        List<String> list = read(filename);
+
+        for (String line : list) {
+            if (line.startsWith("Register A:")) {
+                ra = Long.parseLong(line.split(": ")[1].trim());
+            }
+            if (line.startsWith("Register B:")) {
+                rb = Long.parseLong(line.split(": ")[1].trim());
+            }
+            if (line.startsWith("Register C:")) {
+                rc = Long.parseLong(line.split(": ")[1].trim());
+            }
+            if (line.startsWith("Program:")) {
+                program = Arrays.stream(line.split(": ")[1].trim().split(",")).mapToInt(Integer::parseInt).toArray();
+            }
+        }
+
+        List<Long> result = run();
+        return result.toString().replaceAll("[\\[\\]]", "").replaceAll(" ", "");
+    }
+
+    public static String sevenTB(String filename) {
+        List<String> list = read(filename);
+
+        for (String line : list) {
+            if (line.startsWith("Register A:")) {
+                bra = new BigInteger(raval.toString());
+            }
+            if (line.startsWith("Register B:")) {
+                brb = new BigInteger(line.split(": ")[1].trim());
+            }
+            if (line.startsWith("Register C:")) {
+                brc = new BigInteger(line.split(": ")[1].trim());
+            }
+            if (line.startsWith("Program:")) {
+                program = Arrays.stream(line.split(": ")[1].trim().split(",")).mapToInt(Integer::parseInt).toArray();
+            }
+        }
+
+        while (!run2()){
+//            if (raval.equals(new BigInteger("117439"))) {
+//                System.out.println("pause");
+//            }
+            raval = raval.add(BigInteger.ONE);
+            bra = new BigInteger(raval.toString());;
+        }
+        return raval.toString();
+    }
+
+    public static long eightTA(String filename) {
+        List<String> list = read(filename);
+        int size = 71;
+        int cnt = 1024;
+        grid = new char[size][size];
+        for (char[] g : grid) {
+            Arrays.fill(g, '.');
+        }
+        for (String line : list) {
+            String[] s = line.split(",");
+            grid[Integer.parseInt(s[0])][Integer.parseInt(s[1])] = '#';
+            cnt--;
+            if (cnt==0){
+                break;
+            }
+        }
+
+        int[][] igrid = new int[size][size];
+
+        for (int y=0; y<grid.length; y++) {
+            for (int x=0; x<grid.length; x++) {
+                igrid[x][y] = Integer.MAX_VALUE;
+                if (grid[x][y]=='#') igrid[x][y]=-1;
+            }
+        }
+
+        igrid[0][0] = 0;
+
+        for (int z=0; z<size*10; z++) {
+            for (int y=0; y<grid.length; y++) {
+                for (int x=0; x<grid.length; x++) {
+                    if (igrid[x][y] > -1 && igrid[x][y] < Integer.MAX_VALUE) {
+                        for (int[]dir:directions){
+                            int newx = x + dir[0];
+                            int newy = y + dir[1];
+                            if (newx>=0 && newx<size && newy>=0 && newy<size && igrid[x][y]<igrid[newx][newy]) {
+                                igrid[newx][newy]=igrid[x][y]+1;
+                                grid[newx][newy]='O';
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return igrid[size-1][size-1];
+    }
+
+    public static int[][] init(List<String> list, int cnt, int size) {
+        int[][] igrid = new int[size][size];
+        for (int[] g:igrid) {
+            Arrays.fill(g, Integer.MAX_VALUE);
+        }
+        for (String line : list) {
+            String[] s = line.split(",");
+            igrid[Integer.parseInt(s[0])][Integer.parseInt(s[1])] = -1;
+            cnt--;
+            if (cnt==0){
+                break;
+            }
+        }
+        return igrid;
+    }
+
+    public static String eightTB(String filename) {
+        List<String> list = read(filename);
+        int cnt = 1024;
+        int size = 71;
+        int[][] igrid = null;
+
+        int end = 0;
+        while (end<Integer.MAX_VALUE) {
+            cnt++;
+            igrid = init(list, cnt, size);
+            igrid[0][0] = 0;
+            for (int z = 0; z < size * 10; z++) {
+                for (int y = 0; y < size; y++) {
+                    for (int x = 0; x < size; x++) {
+                        if (igrid[x][y] > -1 && igrid[x][y] < Integer.MAX_VALUE) {
+                            for (int[] dir : directions) {
+                                int newx = x + dir[0];
+                                int newy = y + dir[1];
+                                if (newx >= 0 && newx < size && newy >= 0 && newy < size && igrid[x][y] < igrid[newx][newy]) {
+                                    igrid[newx][newy] = igrid[x][y] + 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            end = igrid[size-1][size-1];
+        }
+        return list.get(cnt-1);
     }
 
 //    public static int oneT(String filename) {
@@ -839,17 +1922,66 @@ public class Main {
 //        System.out.println("8b: " + eightB("8.txt")); //1133, 1138 too low
 //        System.out.println("9a: " + nineA("9.txt")); //90095094087
 //        System.out.println("9b: " + nineB("9.txt")); //too high 6362723394113
-        System.out.println("10a: " + tenA("10test.txt"));
-//        System.out.println("10b: " + tenB("10test.txt"));
-
+//        System.out.println("10a: " + tenA("10.txt"));
+//        System.out.println("10b: " + tenB("10.txt"));
+//        System.out.println("11a: " + elevenA("11.txt"));
+//        System.out.println("11b: " + elevenC("11.txt")); // ans 223767210249237 (incorrect 240575072090579)
+//        System.out.println("12a: " + twelveA("12.txt"));
+//        System.out.println("12b: " + twelveB("12test.txt"));
+//        System.out.println("13a: " + thirtA("13.txt"));
+//        System.out.println("13b: " + thirtB("13test.txt"));
+//        System.out.println("14a: " + fourTA("14.txt")); //96888960 not right
+//        System.out.println("14b: " + fourTB("14.txt"));
+//        System.out.println("15a: " + fifTA("15.txt"));
+//        System.out.println("16a: " + sixTA("16test.txt"));
+//        System.out.println("16b: " + sixTB("16test.txt"));
+//        System.out.println("17a: " + sevenTA("17.txt"));
+//        System.out.println("17b: " + sevenTB("17.txt"));
+//        System.out.println("18a: " + eightTA("18.txt"));
+        System.out.println("18b: " + eightTB("18.txt"));
 
         System.out.println("-----");
         System.out.println(Duration.between(start, Instant.now()).toMillis() + "ms");
     }
 
+    public static class GCD {
+        long gcd;
+        long x;
+        long y;
+
+        GCD(long gcd, long x, long y) {
+            this.gcd = gcd;
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    static GCD gcd(long a, long b) {
+        if (b==0) {
+            return new GCD(a, 1, 0);
+        }
+        GCD ans = gcd(b, a%b);
+        long x = ans.y;
+        long y = ans.x - (a/b) * ans.y;
+        return new GCD(ans.gcd, x, y);
+    }
+
     public static class Coordinate {
-        private final int x;
-        private final int y;
+        private int x;
+        private int y;
+//        Coordinate origin;
+//        Coordinate destination;
+//        Coordinate next;
+//        Coordinate prev;
+        int dirx;
+        int diry;
+        long score;
+//        long cnt;
+//        List<Coordinate> path = new ArrayList<>();
+
+        public Coordinate() {
+            this(0, 0);
+        }
 
         public Coordinate(int x, int y) {
             this.x = x;
